@@ -1,17 +1,30 @@
 name: Build APK
-on: [push]
+on: [push, workflow_dispatch]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - uses: actions/checkout@v4 # v3 को v4 कर दिया
+
+      - name: Set up Java
+        uses: actions/setup-java@v4 # v3 को v4 कर दिया
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+
       - run: flutter pub get
-      - run: flutter build apk --release
+
+      - name: Build APK
+        run: flutter build apk --release --no-tree-shake-icons
+
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4 # यहाँ v4 करना ज़रूरी था
         with:
-          name: my-app-apk
+          name: SmartSave-App
           path: build/app/outputs/flutter-apk/app-release.apk
