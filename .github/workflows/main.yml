@@ -6,28 +6,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
 
-      - name: Fix Permissions and Dependencies
+      - name: Force Update Gradle and Build
         run: |
           flutter pub get
           cd android
-          chmod +x gradlew
-          
-      - name: Build APK
-        # यहाँ हम पुरानी सेटिंग्स को दरकिनार करने के लिए कमांड बदल रहे हैं
-        run: flutter build apk --release --no-tree-shake-icons --split-debug-info=build/app/outputs/symbols
-        
+          # पुरानी सेटिंग्स को साफ़ करने के लिए
+          ./gradlew clean 
+          # जबरदस्ती नया वर्जन इस्तेमाल करने के लिए
+          ./gradlew assembleRelease --stacktrace 
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
